@@ -6,8 +6,14 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 3001;
 
+app.get('/api', (req: Request, res: Response) => {
+  console.log('GET /api');
+  res.send({message: 'Hello from Express Server! (/api endpoint)'});
+});
+
 app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
+  console.log('GET /');
+  res.send({message: 'Hello from Express Server! (/ endpoint)'});
 });
 
 app.listen(port, () => {
