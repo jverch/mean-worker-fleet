@@ -23,7 +23,6 @@ app.get('/', (req: Request, res: Response) => {
 
 app.post('/api/generate', jsonParser, (req: Request, res: Response) => {
   console.log('POST /api/generate');
-  console.log(req.body);
   let fileCount = req.body?.fileCount;
   let numberCount = req.body?.numberCount;
   if (req.body && fileCount && numberCount) {
