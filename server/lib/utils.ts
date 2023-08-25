@@ -1,9 +1,15 @@
 var fs = require('fs');
 
-export function GenerateFiles(fileCount: number, numberCount: number) {
+// Generates files with random numbers
+// Parameters:
+//   fileCount: number of files to generate
+//   numberCount: number of random numbers to generate in each file
+// Output: list of file names generated
+export function generateFiles(fileCount: number, numberCount: number): string[] {
   console.log('GenerateFiles');
   console.log('fileCount: ' + fileCount);
   console.log('numberCount: ' + numberCount);
+  const filenames: string[] = [];
   for (let i = 0; i < fileCount; i++) {
     let fileName = 'data/data' + i + '.csv';
     let fileStream = fs.createWriteStream(fileName);
@@ -12,4 +18,5 @@ export function GenerateFiles(fileCount: number, numberCount: number) {
     }
     fileStream.end();
   }
+  return filenames;
 }

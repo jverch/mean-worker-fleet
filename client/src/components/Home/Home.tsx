@@ -37,6 +37,17 @@ const Home: FC<HomeProps> = () => {
       .catch((err) => console.log(err));
   };
 
+  const calculate = () => {
+    console.log("calculating?");
+    fetch("/api/calculate")
+      .then((res) => {
+        res.json().then((data) => {
+          console.log("Response from calculate: ", data);
+        });
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <div className="Home" data-testid="Home">
       Home Component
@@ -64,6 +75,7 @@ const Home: FC<HomeProps> = () => {
           </label>
         </form>
         <button onClick={() => generate(fileCount, numberCount)}>Generate</button>
+        <button onClick={() => calculate()}>Calculate</button>
       </div>
     </div>
   )
