@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { generateFiles } from './lib/utils';
 import { spawn } from 'child_process';
+const fs = require('fs');
 
 dotenv.config();
 
@@ -37,16 +38,27 @@ app.post('/api/generate', jsonParser, (req: Request, res: Response) => {
 
 app.get('/api/calculate', jsonParser, (req: Request, res: Response) => {
   console.log('POST /api/calculate');
-  let files = ["data/data0.csv", "data/data1.csv", "data/data2.csv", "data/data3.csv", "data/data4.csv"];
+  // let files = ["data/data0.csv", "data/data1.csv", "data/data2.csv", "data/data3.csv", "data/data4.csv"];
+  let files: string[] = [];
+  fs.readdirSync('data').forEach((file: string) => {
+    // Only add data files
+    if (file.includes('data')) {
+      files.push('data/' + file);
+    }
+  });
   try {
     let dataToSend = '';
     // spawn new child process to call the python script
-    const python = spawn('python3', ['python/hello_world.py', JSON.stringify(files)]);
+    const python = spawn('python3', ['python/celery/celery_scheduler.py', JSON.stringify(files)]);
     // collect data from script
     python.stdout.on('data', function (data) {
       console.log('Pipe data from python script ...');
       console.log('Got data from python script: ' + data.toString());
       dataToSend = data.toString();
+    });
+    // error logging
+    python.stderr.on('data', (data) => {
+      console.log('Error from python script: ' + data.toString());
     });
     // in close event we are sure that stream from child process is closed
     python.on('close', (code) => {

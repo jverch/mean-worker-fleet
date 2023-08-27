@@ -13,13 +13,19 @@ Or, if you don't want/need a background service you can just run:
 # Celery https://docs.celeryq.dev/en/stable/
   `pip3 install celery`
 To start celery:
-  `cd /python`
-  `celery -A proj worker --loglevel=INFO`
+  `cd /python/celery`
+  `celery -A tasks worker --loglevel=INFO`
 With one worker running 4 processes:
-  `cd /python`
+  `cd /python/celery`
   `celery -A tasks worker --loglevel=INFO --concurrency=4`
 Multiple workers:
-  `cd /python`
-  `celery -A tasks worker -loglevel=INFO -n worker1@hostname`
-  `celery -A tasks worker -loglevel=INFO -n worker2@hostname`
-  `celery -A tasks worker -loglevel=INFO -n worker3@hostname`
+  Set up `celery multi`:
+    `sudo mkdir -p -m 2755 /var/run/celery`
+    `sudo mkdir -p -m 2755 /var/log/celery`
+    `sudo chown -R $USER: /var/run/celery`
+    `sudo chown -R $USER: /var/log/celery`
+  Use `celery multi` to start 3 workers with 1 process each:
+    `cd /python/celery`
+    `celery multi start 3 -A tasks --concurrency=1 --hostname=localhost`
+  Stop workers:
+    `celery multi stop 3 -A tasks`
