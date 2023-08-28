@@ -29,3 +29,7 @@ Multiple workers:
     `celery multi start 3 -A tasks --concurrency=1 --hostname=localhost`
   Stop workers:
     `celery multi stop 3 -A tasks`
+
+"Flower" tool for monitoring Celery workers:
+  `cd /python/celery`
+  `celery -A tasks flower`

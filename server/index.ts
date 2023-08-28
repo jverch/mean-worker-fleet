@@ -4,6 +4,9 @@ import { generateFiles } from './lib/utils';
 import { spawn } from 'child_process';
 const fs = require('fs');
 
+const MAX_FILE_COUNT = 300;
+const MAX_NUMBER_COUNT = 1000000;
+
 dotenv.config();
 
 const app: Express = express();
@@ -28,12 +31,42 @@ app.post('/api/generate', jsonParser, (req: Request, res: Response) => {
   let fileCount = req.body?.fileCount;
   let numberCount = req.body?.numberCount;
 
-  if (req.body && fileCount && numberCount) {
-    generateFiles(fileCount, numberCount);
-    res.send({message: 'Generating files!'});
-  } else {
+  if (fileCount && fileCount > MAX_FILE_COUNT || numberCount && numberCount > MAX_NUMBER_COUNT) {
     res.status(400).send({message: 'Invalid request body'});
+    return;
   }
+
+  try {
+    let dataToSend = '';
+    // spawn new child process to call the python script
+    const python = spawn('python3', ['python/celery/generate_files.py', fileCount, numberCount, '-u']);
+    // collect data from script
+    python.stdout.on('data', function (data) {
+      console.log('Pipe data from python script ...');
+      console.log('Got data from python script: ' + data.toString());
+      dataToSend = data.toString();
+    });
+    // error logging
+    python.stderr.on('data', (data) => {
+      console.log('Error from python script: ' + data.toString());
+    });
+    // in close event we are sure that stream from child process is closed
+    python.on('close', (code) => {
+      console.log(`child process close all stdio with code ${code}`);
+      // send data to browser
+      res.send(JSON.stringify(dataToSend));
+    });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({message: 'Internal server error'});
+    }
+
+  // if (req.body && fileCount && numberCount) {
+  //   generateFiles(fileCount, numberCount);
+  //   res.send({message: 'Generating files!'});
+  // } else {
+  //   res.status(400).send({message: 'Invalid request body'});
+  // }
 });
 
 app.get('/api/calculate', jsonParser, (req: Request, res: Response) => {
@@ -49,7 +82,7 @@ app.get('/api/calculate', jsonParser, (req: Request, res: Response) => {
   try {
     let dataToSend = '';
     // spawn new child process to call the python script
-    const python = spawn('python3', ['python/celery/celery_scheduler.py', JSON.stringify(files)]);
+    const python = spawn('python3', ['python/celery/celery_scheduler.py', JSON.stringify(files), '-u']);
     // collect data from script
     python.stdout.on('data', function (data) {
       console.log('Pipe data from python script ...');

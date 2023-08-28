@@ -1,5 +1,6 @@
 from celery import Celery
 from contextlib import ExitStack
+import random
 
 app = Celery('celery',
              broker='pyamqp://guest@localhost//',
@@ -28,3 +29,9 @@ def calculate_mean(filename, totalFileNum):
       for row in input:
         output.write(str(int(row) / totalFileNum) + "\n")
   return "data/mean.csv"
+
+@app.task
+def generate_file(fileNum, numCount):
+  with open("../../data/data%s.csv" % fileNum, "w") as output:
+    for j in range(numCount):
+      output.write(str(random.randint(0, j)) + "\n")

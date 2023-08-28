@@ -1,18 +1,15 @@
 import React, { FC } from 'react';
 import './Home.css';
 
+const MAX_FILE_COUNT = 300;
+const MAX_NUMBER_COUNT = 1000000;
+
 interface HomeProps {}
 
 const Home: FC<HomeProps> = () => {
   const [data, setData] = React.useState(null);
   const [fileCount, setFileCount] = React.useState('1');
   const [numberCount, setNumberCount] = React.useState('1');
-
-  React.useEffect(() => {
-    fetch("/api")
-      .then((res) => res.json())
-      .then((data) => setData(data.message));
-  }, []);
 
   // generate function
   const generate = (fileCount: string, numberCount: string) => {
@@ -22,8 +19,8 @@ const Home: FC<HomeProps> = () => {
     if (isNaN(currFileCount) || isNaN(currNumberCount)) {
       return alert("File Count and Number Count must be numbers");
     };
-    if (currFileCount < 1 || currFileCount > 100 || currNumberCount < 1 || currNumberCount > 1000000) {
-      return alert("File Count must be a number within the range of 1-100 and Number Count within the range of 1-1000000");
+    if (currFileCount < 1 || currFileCount > MAX_FILE_COUNT || currNumberCount < 1 || currNumberCount > MAX_NUMBER_COUNT) {
+      return alert(`File Count must be a number within the range of 1-${MAX_FILE_COUNT} and Number Count within the range of 1-${MAX_NUMBER_COUNT}}`);
     };
     fetch("/api/generate", {
       method: "POST",
@@ -51,7 +48,6 @@ const Home: FC<HomeProps> = () => {
   return (
     <div className="Home" data-testid="Home">
       Home Component
-      <p>{!data ? "Loading..." : data}</p>
       <div>
         <form>
           <h1>Generate Files:</h1>
@@ -75,8 +71,9 @@ const Home: FC<HomeProps> = () => {
           </label>
         </form>
         <button onClick={() => generate(fileCount, numberCount)}>Generate</button>
-        <button onClick={() => calculate()}>Calculate</button>
+        <p>{!data ? "" : data}</p>
       </div>
+      <button onClick={() => calculate()}>Calculate Mean</button>
     </div>
   )
 };

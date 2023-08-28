@@ -10,10 +10,10 @@ export function generateFiles(fileCount: number, numberCount: number): string[] 
   console.log('fileCount: ' + fileCount);
   console.log('numberCount: ' + numberCount);
   deleteDataFiles();
-  let files: string[] = [];
-  fs.readdirSync('data').forEach((file: string) => {
-    files.push('data/' + file);
-  });
+  // let files: string[] = [];
+  // fs.readdirSync('data').forEach((file: string) => {
+  //   files.push('data/' + file);
+  // });
   const filenames: string[] = [];
   for (let i = 0; i < fileCount; i++) {
     let fileName = 'data/data' + i + '.csv';
