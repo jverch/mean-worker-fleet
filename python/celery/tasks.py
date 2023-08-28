@@ -8,13 +8,9 @@ i = app.control.inspect()
 
 @app.task
 def calculate_sum(filenames, fileNum):
-  print("filenames: ", filenames)
-  print("active: ", i.active())
-  # print("registered: ", i.registered())
-  print("scheduled: ", i.scheduled())
-  # print("stats: ", i.stats())
-  # print("ping: ", i.ping())
-  # with open("data/sum.csv", "w") as output:
+  # print("filenames: ", filenames)
+  # print("active: ", i.active())
+  # print("scheduled: ", i.scheduled())
   with open("../../data/sum%s.csv" % fileNum, "w") as output:
     with ExitStack() as stack:
         files = [stack.enter_context(open("../../" + filename, "r")) for filename in filenames]
